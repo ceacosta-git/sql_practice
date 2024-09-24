@@ -8,6 +8,18 @@ FROM patients
 WHERE patient_id IN (1,45,534,879,1000);
 /*—————————————*/
 
+/* find the first_name, last name and birth date of patients who has height greater than 160 and weight greater than 70*/
+SELECT first_name, last_name, birth_date
+FROM patients
+WHERE height > 160 AND weight > 70;
+/*—————————————*/
+
+/* find list of patients first_name, last_name, and allergies where allergies are not null and are from the city of 'Hamilton'*/
+SELECT first_name, last_name, allergies
+FROM patients
+WHERE allergies IS NOT null AND city = 'Hamilton';
+/*—————————————*/
+
 /* Retrieve unique cities for patients with province 'NS'*/
 SELECT DISTINCT(city) FROM patients
 WHERE province_id = ’NS’;
