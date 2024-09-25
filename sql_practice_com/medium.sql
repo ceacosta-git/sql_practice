@@ -259,4 +259,69 @@ INNER JOIN admissions
 ON doctors.doctor_id = admissions.attending_doctor_id
 group by doctors.doctor_id;
 
-/* 21 - */
+/* 21 - Display the total amount of patients for each province. Order by descending.*/
+SELECT province_name, count(*) total_patients
+FROM patients
+INNER JOIN province_names
+ON patients.province_id = province_names.province_id
+GROUP BY patients.province_id
+order by total_patients desc;
+
+/* 22 - For every admission, display the patient's full name, their admission diagnosis, 
+and their doctor's full name who diagnosed their problem.*/
+SELECT 
+CONCAT(patients.first_name, ' ', patients.last_name) as patient_full_name, 
+diagnosis,
+CONCAT(doctors.first_name, ' ', doctors.last_name) as doctor_full_name
+FROM admissions
+INNER JOIN patients
+ON admissions.patient_id = patients.patient_id
+INNER JOIN doctors
+ON admissions.attending_doctor_id = doctors.doctor_id;
+
+/* 23 - display the first name, last name and number of duplicate patients based on their first name and last name.
+Ex: A patient with an identical name can be considered a duplicate.*/
+SELECT first_name, last_name, count(*) as num_of_duplicates
+FROM patients
+group by first_name, last_name
+having num_of_duplicates > 1;
+
+SELECT first_name, last_name, count(*) as num_of_duplicates
+FROM patients
+group by (CONCAT(first_name,' ',last_name))
+having num_of_duplicates > 1;
+
+/* 24 - Display patient's full name,
+height in the units feet rounded to 1 decimal,
+weight in the unit pounds rounded to 0 decimals,
+birth_date,
+gender non abbreviated.
+
+Convert CM to feet by dividing by 30.48.
+Convert KG to pounds by multiplying by 2.205.*/
+SELECT 
+  CONCAT(first_name, ' ', last_name) as patient_name,
+  round(height/30.48, 1) as height_feet,
+  ROUND(weight*2.205, 0) AS weight_pounds,
+  birth_date,
+  (CASE 
+     wheN gender = 'M' THEN 'Male'
+     WHEN gender = 'F' THEN 'Female'
+   END) AS gender
+FROM patients;
+
+/* 25 - Show patient_id, first_name, last_name from patients whose does not have any records in the admissions table.
+(Their patient_id does not exist in any admissions.patient_id rows.)*/
+SELECT patients.patient_id, first_name, last_name
+from patients
+where patients.patient_id not in (
+    select admissions.patient_id
+    from admissions
+  );
+
+/* This was my initial solution but was listed as 2nd solution out of 2*/
+SELECT patients.patient_id, patients.first_name, patients.last_name 
+FROM patients
+LEFT OUTER JOIN admissions
+ON patients.patient_id = admissions.patient_id
+WHERE admissions.patient_id is null;
