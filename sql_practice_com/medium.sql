@@ -192,3 +192,71 @@ where sum_height >= 7000;
 SELECT max(weight) - min(weight) as difference_max_min_height
 FROM patients
 WHERE last_name = 'Maroni'; 
+
+/* 16 - Show all of the days of the month (1-31) and how many admission_dates occurred on that day. 
+Sort by the day with most admissions to least admissions.*/
+SELECT day(admission_date) as day_number, COUNT(*) as number_of_admissions 
+FROM admissions
+group by day_number
+order by number_of_admissions desc; 
+
+/* 17 - Show all columns for patient_id 542's most recent admission_date.*/
+SELECT *
+FROM admissions
+WHERE patient_id = 542
+group by patient_id
+having admission_date = max(admission_date);
+
+SELECT *
+FROM admissions
+WHERE patient_id = 542 AND 
+admission_date = (
+  SELECT MAX(admission_date) 
+  from admissions
+  WHERE patient_id = 542
+); 
+
+/* This was my initial solution but was listed as 3rd solution out of 4*/
+SELECT *
+FROM admissions
+WHERE patient_id = 542
+order by admission_date DESC
+limit 1;
+
+SELECT *
+FROM admissions
+group by patient_id
+having patient_id = 542 AND max(admission_date);
+
+/* 18 - Show patient_id, attending_doctor_id, and diagnosis for admissions that match one of the two criteria:
+1. patient_id is an odd number and attending_doctor_id is either 1, 5, or 19.
+2. attending_doctor_id contains a 2 and the length of patient_id is 3 characters.*/
+SELECT patient_id, attending_doctor_id, diagnosis
+FROM admissions
+WHERE (patient_id % 2 = 1 AND attending_doctor_id in (1, 5, 19)) or 
+(attending_doctor_id like '%2%' AND len(patient_id) = 3); 
+
+/* 19 - Show first_name, last_name, and the total number of admissions attended for each doctor.
+Every admission has been attended by a doctor.*/
+SELECT first_name, last_name, count(*) as total_admissions
+FROM admissions
+INNER JOIN doctors
+ON doctors.doctor_id = admissions.attending_doctor_id
+group by attending_doctor_id;
+
+SELECT first_name, last_name, count(*) as total_admissions
+FROM admissions, doctors
+WHERE doctors.doctor_id = admissions.attending_doctor_id
+group by attending_doctor_id;
+
+/* 20 - For each doctor, display their id, full name, and the first and last admission date they attended.*/
+SELECT doctor_id, 
+concat(first_name, ' ', last_name) as full_name,
+min(admission_date) AS first_admission_date, 
+MAX(admission_date) AS last_admission_date
+FROM doctors
+INNER JOIN admissions
+ON doctors.doctor_id = admissions.attending_doctor_id
+group by doctors.doctor_id;
+
+/* 21 - */
